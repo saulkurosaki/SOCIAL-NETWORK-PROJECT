@@ -28,6 +28,19 @@ app.use("/api/user", UserRoutes);
 app.use("/api/publication", PublicationRoutes);
 app.use("/api/follow", FollowRoutes);
 
+// Ruta de prueba
+app.get("/ruta-prueba", (req, res) => {
+    
+    return res.status(200).json(
+        {
+            "id": 1,
+            "nombre": "Victor",
+            "web": "victorroblesweb.es"
+        }
+    );
+
+})
+
 // Poner servidor a escuchar peticiones http
 app.listen(puerto, () => {
     console.log("Servidor de node corriendo en el puerto: ", puerto);
