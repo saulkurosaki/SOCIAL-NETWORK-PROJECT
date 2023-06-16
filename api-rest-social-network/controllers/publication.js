@@ -219,7 +219,7 @@ const feed = async (req, res) => {
             .sort("-created_at")
             .paginate(page, itemsPerPage).then((publications, total) => {
 
-                if (error || !publications) {
+                if (!publications) {
                     return res.status(500).send({
                         status: "error",
                         message: "No hay publicaciones para mostrar",
