@@ -190,15 +190,7 @@ const media = (req, res) => {
     const filePath = "./uploads/publications/" + file;
 
     // Comprobar que existe
-    fs.stat(filePath, (exists) => {
-
-        if (!exists) {
-            return res.status(404).send({
-                status: "error",
-                message: "No existe la imagen"
-            });
-        }
-
+    fs.stat(filePath, () => {
         // Devolver un file
         return res.sendFile(path.resolve(filePath));
     });
