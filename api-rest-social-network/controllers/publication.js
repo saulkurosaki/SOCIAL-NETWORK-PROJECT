@@ -71,20 +71,20 @@ const remove = (req, res) => {
     const publicationId = req.params.id;
 
     // Find y luego un remove
-    Publication.find({ "user": req.user.id, "_id": publicationId })
-        .remove().then(error => {
-            if (error) {
-                return res.status(500).send({
-                    status: "error",
-                    message: "No se ha eliminado la publicación"
-                });
-            }
-
+    Publication.findOneAndDelete({ "user": req.user.id, "_id": publicationId })
+        .then(() => {
             // Devolver respuesta
             return res.status(200).send({
                 status: "success",
                 message: "Eliminar publicación",
                 publication: publicationId
+            });
+        })
+        .catch((error) => {
+            return res.status(500).send({
+                status: "error",
+                message: "No se ha eliminado la publicación",
+                error
             });
         });
 
