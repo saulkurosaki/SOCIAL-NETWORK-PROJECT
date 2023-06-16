@@ -1,5 +1,4 @@
 // Importar modelo
-const follow = require("../models/follow");
 const Follow = require("../models/follow");
 const User = require("../models/user");
 
@@ -61,10 +60,10 @@ const unfollow = (req, res) => {
     const followedId = req.params.id;
 
     // Find de las coincidencias y hacer remove
-    Follow.find({
+    Follow.findOneAndDelete({
         "user": userId,
         "followed": followedId
-    }).remove().then((followDeleted) => {
+    }).then((followDeleted) => {
 
         if (!followDeleted) {
             return res.status(500).send({
@@ -76,6 +75,13 @@ const unfollow = (req, res) => {
         return res.status(200).send({
             status: "success",
             message: "Follow eliminado correctamente"
+        });
+    })
+    .catch((error) => {
+        return res.status(500).send({
+            status: "error",
+            message: "Error en la peticion",
+            error,
         });
     });
 
