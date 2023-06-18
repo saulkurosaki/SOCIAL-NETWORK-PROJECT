@@ -20,6 +20,7 @@ export const AuthProvider = ({children}) => {
 
         //Comprobar si tengo el token y el user
         if(!token || !user){
+            setLoading(false);
             return false
         };
 
