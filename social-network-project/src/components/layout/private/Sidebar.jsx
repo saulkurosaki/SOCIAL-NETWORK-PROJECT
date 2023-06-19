@@ -40,7 +40,7 @@ export const SideBar = () => {
                             </Link>
                         </div>
                         <div className="stats__following">
-                            <Link to={'siguiendo/'+auth._id} className="following__link">
+                            <Link to={'seguidores/'+auth._id} className="following__link">
                                 <span className="following__title">Seguidores</span>
                                 <span className="following__number">{counters.followed}</span>
                             </Link>
