@@ -3,22 +3,34 @@ import avatar from '../../assets/img/user.png';
 import { GetProfile } from '../../helpers/GetProfile';
 import { Link, useParams } from 'react-router-dom';
 import { Global } from '../../helpers/Global';
+import useAuth from '../../hooks/useAuth';
 
 export const Profile = () => {
 
+    const {auth} = useAuth();
     const [user, setUser] = useState({});
     const [counters, setCounters] = useState({});
+    const [iFollow, setIFollow] = useState(false);
+
     const params = useParams();
 
     useEffect(() => {
-        GetProfile(params.userId, setUser);
+        getDataUser();
         getCounters();
     }, []);
 
     useEffect(() => {
-        GetProfile(params.userId, setUser);
+        getDataUser();
         getCounters();
     }, [params]);
+
+    const getDataUser = async () => {
+        let dataUser = await GetProfile(params.userId, setUser);
+        console.log(dataUser);
+        if(dataUser.following && dataUser.following._id){
+            setIFollow(true);
+        }
+    };
     
     const getCounters = async () => {
         const request = await fetch(Global.url + 'user/counters/' + params.userId, {
@@ -53,7 +65,12 @@ export const Profile = () => {
                     <div className="general-info__container-names">
                         <div className="container-names__name">
                             <h1>{user.name} {user.surname}</h1>
-                            <button className="content__button content__button--right">Seguir</button>
+                            {user._id != auth._id && 
+                                (iFollow
+                                ? <button className="content__button content__button--right post__button">Dejar de seguir</button>
+                                : <button className="content__button content__button--right">Seguir</button>
+                                )
+                            }
                         </div>
                         <h2 className="container-names__nickname">{user.nick}</h2>
                         <p>{user.bio}</p>
