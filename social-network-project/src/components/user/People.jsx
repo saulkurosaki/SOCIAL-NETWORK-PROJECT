@@ -7,6 +7,7 @@ export const People = () => {
   const [users, setUsers] = useState([]);
   const [page, setPage] = useState(1);
   const [more, setMore] = useState(true);
+  const [following, setFollowing] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export const People = () => {
 
       let newUsers = data.users;
 
-      if(users.length >= 1){
+      if (users.length >= 1) {
         newUsers = [
           ...users,
           ...data.users,
@@ -40,12 +41,13 @@ export const People = () => {
       }
 
       setUsers(newUsers);
+      setFollowing(data.user_following);
       setLoading(false);
 
     };
 
     //Paginacion
-    if(users.length >= data.total ){
+    if (users.length >= (data.total - data.itemsPerPage)) {
       setMore(false);
     };
 
@@ -55,6 +57,52 @@ export const People = () => {
     let next = page + 1
     setPage(next);
     getUsers(next);
+  };
+
+  const follow = async (userId) => {
+    //Peticion Ajax para guardar el follow
+    const request = await fetch(Global.url + 'follow/save', {
+      method: "POST",
+      body: JSON.stringify({followed: userId}),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token'),
+      }
+    });
+
+    const data = await request.json();
+
+    //Cuando este todo correcto
+    if(data.status == 'success'){
+
+      //Actualizar estado de following, agregando el nuevo follow
+      setFollowing([...following, userId]);
+
+    }
+
+  };
+
+  const unfollow = async (userId) => {
+    //Peticion Ajax para borrar el follow
+    const request = await fetch(Global.url + 'follow/unfollow/' + userId, {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': localStorage.getItem('token'),
+      },
+    });
+
+    const data = await request.json();
+
+    //Cuando todo este correcto
+    if(data.status == 'success'){
+
+      //Actualizar estado de following, filtrando los datos parar eliminar el antiguo follow
+      let filterFollowings = following.filter(followingUserId => userId !== followingUserId);
+      setFollowing(filterFollowings);
+
+    }
+
   };
 
   return (
@@ -76,8 +124,8 @@ export const People = () => {
 
                 <div className="post__image-user">
                   <a href="#" className="post__image-link">
-                    {user.image != 'default.png' && <img src={Global.url + 'user/avatar/' + user.image} className="post__user-image" alt="Foto de perfil"/>}
-                    {user.image == 'default.png' && <img src={avatar} className="post__user-image" alt="Foto de perfil"/>}
+                    {user.image != 'default.png' && <img src={Global.url + 'user/avatar/' + user.image} className="post__user-image" alt="Foto de perfil" />}
+                    {user.image == 'default.png' && <img src={avatar} className="post__user-image" alt="Foto de perfil" />}
                   </a>
                 </div>
 
@@ -98,13 +146,19 @@ export const People = () => {
 
               <div className="post__buttons">
 
-                <a href="#" className="post__button post__button--green">
-                  Seguir
-                </a>
+                {!following.includes(user._id) &&
+                  <button className="post__button post__button--green"
+                    onClick={() => follow(user._id)}>
+                    Seguir
+                  </button>
+                }
 
-                {/* <a href="#" className="post__button">
-              Dejar de seguir
-            </a> */}
+                {following.includes(user._id) &&
+                  <button className="post__button"
+                  onClick={() => unfollow(user._id)}>
+                    Dejar de seguir
+                  </button>
+                }
 
               </div>
 
@@ -118,14 +172,14 @@ export const People = () => {
 
       {loading ? <h1>Cargando...</h1> : null}
 
-      {more && 
+      {more &&
         <div className="content__container-btn">
           <button className="content__btn-more-post" onClick={nextPage}>
             Ver mas personas
           </button>
         </div>
       }
-      <br/>
+      <br />
     </>
   )
 }
