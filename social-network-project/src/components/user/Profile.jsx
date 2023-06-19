@@ -1,54 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import avatar from '../../assets/img/user.png';
+import { GetProfile } from '../../helpers/GetProfile';
+import { useParams } from 'react-router-dom';
+import { Global } from '../../helpers/Global';
 
 export const Profile = () => {
+
+    const [user, setUser] = useState({});
+    const params = useParams();
+
+    useEffect(() => {
+        GetProfile(params.userId, setUser);
+    }, []);
+
     return (
         <>
 
-                <header className="aside__profile-info">
+            <header className="aside__profile-info">
 
-                    <div className="profile-info__general-info">
-                        <div className="general-info__container-avatar">
-                            <img src={avatar} className="container-avatar__img" alt="Foto de perfil"/>
-                        </div>
-
-                        <div className="general-info__container-names">
-                            <p className="container-names__name">
-                                <h1>Victor Robles</h1>
-                                <button className="content__button content__button--right">Seguir</button>
-                            </p>
-                            <h2 className="container-names__nickname">VictorWeb</h2>
-                            <p>Biografía</p>
-                        </div>
+                <div className="profile-info__general-info">
+                    <div className="general-info__container-avatar">
+                        {user.image != 'default.png' && <img src={Global.url + 'user/avatar/' + user.image} className="container-avatar__img" alt="Foto de perfil" />}
+                        {user.image == 'default.png' && <img src={avatar} className="container-avatar__img" alt="Foto de perfil" />}
                     </div>
 
-                    <div className="profile-info__stats">
-
-                        <div className="stats__following">
-                            <a href="#" className="following__link">
-                                <span className="following__title">Siguiendo</span>
-                                <span className="following__number">10</span>
-                            </a>
+                    <div className="general-info__container-names">
+                        <div className="container-names__name">
+                            <h1>{user.name} {user.surname}</h1>
+                            <button className="content__button content__button--right">Seguir</button>
                         </div>
-                        <div className="stats__following">
-                            <a href="#" className="following__link">
-                                <span className="following__title">Seguidores</span>
-                                <span className="following__number">13</span>
-                            </a>
-                        </div>
+                        <h2 className="container-names__nickname">{user.nick}</h2>
+                        <p>{user.bio}</p>
+                    </div>
+                </div>
 
+                <div className="profile-info__stats">
 
-                        <div className="stats__following">
-                            <a href="#" className="following__link">
-                                <span className="following__title">Publicaciones</span>
-                                <span className="following__number">17</span>
-                            </a>
-                        </div>
-
-
+                    <div className="stats__following">
+                        <a href="#" className="following__link">
+                            <span className="following__title">Siguiendo</span>
+                            <span className="following__number">10</span>
+                        </a>
+                    </div>
+                    <div className="stats__following">
+                        <a href="#" className="following__link">
+                            <span className="following__title">Seguidores</span>
+                            <span className="following__number">13</span>
+                        </a>
                     </div>
 
-                </header>
+
+                    <div className="stats__following">
+                        <a href="#" className="following__link">
+                            <span className="following__title">Publicaciones</span>
+                            <span className="following__number">17</span>
+                        </a>
+                    </div>
+
+
+                </div>
+
+            </header>
 
 
             <div className="content__posts">
