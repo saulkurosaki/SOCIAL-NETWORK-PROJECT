@@ -12,6 +12,7 @@ export const Profile = () => {
     const [counters, setCounters] = useState({});
     const [iFollow, setIFollow] = useState(false);
     const [publications, setPublications] = useState([]);
+    const [page, setPage] = useState(1);
 
     const params = useParams();
 
@@ -108,8 +109,20 @@ export const Profile = () => {
         const data = await request.json();
 
         if (data.status == 'success') {
-            setPublications(data.publications);
+
+            let newPublications = data.publications;
+            if(publications.length >= 1){
+                newPublications = [...publications,...data.publications];
+            }
+
+            setPublications(newPublications);
         }
+    };
+
+    const nextPage = () => {
+        let next = page + 1;
+        setPage(next);
+        getPublications(next);
     };
 
     return (
@@ -181,7 +194,7 @@ export const Profile = () => {
 
                     return (
 
-                        <article className="posts__post">
+                        <article className="posts__post" key={publication._id}>
 
                             <div className="post__container">
 
@@ -224,7 +237,7 @@ export const Profile = () => {
 
             </div>
 
-            <div className="content__container-btn">
+            <div className="content__container-btn" onClick={nextPage}>
                 <button className="content__btn-more-post">
                     Ver mas publicaciones
                 </button>
