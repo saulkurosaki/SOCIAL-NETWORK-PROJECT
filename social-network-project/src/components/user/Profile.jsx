@@ -13,19 +13,21 @@ export const Profile = () => {
     const [iFollow, setIFollow] = useState(false);
     const [publications, setPublications] = useState([]);
     const [page, setPage] = useState(1);
+    const [more, setMore] = useState(true);
 
     const params = useParams();
 
     useEffect(() => {
         getDataUser();
         getCounters();
-        getPublications();
+        getPublications(1, true);
     }, []);
 
     useEffect(() => {
         getDataUser();
         getCounters();
-        getPublications();
+        setMore(true);
+        getPublications(1, true);
     }, [params]);
 
     const getDataUser = async () => {
@@ -97,7 +99,7 @@ export const Profile = () => {
 
     };
 
-    const getPublications = async (nextPage = 1) => {
+    const getPublications = async (nextPage = 1, newProfile = false) => {
         const request = await fetch(Global.url + 'publication/user/' + params.userId + '/' + nextPage, {
             method: 'GET',
             headers: {
@@ -111,11 +113,23 @@ export const Profile = () => {
         if (data.status == 'success') {
 
             let newPublications = data.publications;
-            if(publications.length >= 1){
-                newPublications = [...publications,...data.publications];
+
+            if (!newProfile && publications.length >= 1) {
+                newPublications = [...publications, ...data.publications];
+            }
+
+            if(newProfile){
+                newPublications = data.publications;
+                setMore(true);
+                setPage(1);
             }
 
             setPublications(newPublications);
+
+            if (!newProfile && publications.length >= (data.total - data.publications.length)) {
+                setMore(false);
+            }
+
         }
     };
 
@@ -237,11 +251,13 @@ export const Profile = () => {
 
             </div>
 
-            <div className="content__container-btn" onClick={nextPage}>
-                <button className="content__btn-more-post">
-                    Ver mas publicaciones
-                </button>
-            </div>
+            {more &&
+                <div className="content__container-btn" onClick={nextPage}>
+                    <button className="content__btn-more-post">
+                        Ver mas publicaciones
+                    </button>
+                </div>
+            }
 
             <br />
         </>
